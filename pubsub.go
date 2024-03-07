@@ -13,10 +13,7 @@ import (
 func runPubSub(cmd *cobra.Command, args []string) {
 	// create pubsub channel
 	logger := watermill.NewStdLogger(false, false)
-	pubSub := gochannel.NewGoChannel(
-		gochannel.Config{},
-		logger,
-	)
+	pubSub := gochannel.NewGoChannel(gochannelConfig, logger)
 	defer pubSub.Close()
 	// prepare topic handlers
 	for topic, handler := range topicHandlers {

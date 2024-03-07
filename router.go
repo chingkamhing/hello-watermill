@@ -25,7 +25,7 @@ func runRouter(cmd *cobra.Command, args []string) {
 	router.AddPlugin(plugin.SignalsHandler)
 	// For simplicity, we are using the gochannel Pub/Sub here,
 	// You can replace it with any Pub/Sub implementation, it will work the same.
-	pubSub := gochannel.NewGoChannel(gochannel.Config{}, logger)
+	pubSub := gochannel.NewGoChannel(gochannelConfig, logger)
 	// prepare topic handlers
 	for topic, handler := range topicHandlers {
 		router.AddNoPublisherHandler(

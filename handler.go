@@ -8,6 +8,7 @@ import (
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
+	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
 )
 
 type MsgHandler func(msg *message.Message) error
@@ -16,6 +17,12 @@ type TopicHandler map[string]MsgHandler
 var topicHandlers = TopicHandler{
 	"wk.email.send": handlerEmail,
 	"wk.imos.post":  handlerImos,
+}
+
+var gochannelConfig = gochannel.Config{
+	OutputChannelBuffer:            4,
+	Persistent:                     false,
+	BlockPublishUntilSubscriberAck: false,
 }
 
 func (handler TopicHandler) Topics() []string {
@@ -36,17 +43,20 @@ func publishMessages(publisher message.Publisher) {
 		if err := publisher.Publish(topic, msg); err != nil {
 			log.Fatalf("Publish error: %v", err)
 		}
+		// fmt.Printf("Publish to %s topic %s\n", topic, msg.UUID)
 
-		time.Sleep(time.Second)
+		time.Sleep(10 * time.Millisecond)
 	}
 }
 
 func handlerEmail(msg *message.Message) error {
 	fmt.Printf("Send email: %s message: %s\n", msg.UUID, string(msg.Payload))
+	time.Sleep(5 * time.Second)
 	return nil
 }
 
 func handlerImos(msg *message.Message) error {
 	fmt.Printf("Post to imos: %s message: %s\n", msg.UUID, string(msg.Payload))
+	time.Sleep(1 * time.Second)
 	return nil
 }
