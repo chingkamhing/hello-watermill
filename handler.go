@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"time"
@@ -43,20 +42,20 @@ func publishMessages(publisher message.Publisher) {
 		if err := publisher.Publish(topic, msg); err != nil {
 			log.Fatalf("Publish error: %v", err)
 		}
-		// fmt.Printf("Publish to %s topic %s\n", topic, msg.UUID)
+		log.Printf("Publish to %s topic %s", topic, msg.UUID)
 
 		time.Sleep(10 * time.Millisecond)
 	}
 }
 
 func handlerEmail(msg *message.Message) error {
-	fmt.Printf("Send email: %s message: %s\n", msg.UUID, string(msg.Payload))
+	log.Printf("Send email: %s message: %s", msg.UUID, string(msg.Payload))
 	time.Sleep(5 * time.Second)
 	return nil
 }
 
 func handlerImos(msg *message.Message) error {
-	fmt.Printf("Post to imos: %s message: %s\n", msg.UUID, string(msg.Payload))
+	log.Printf("Post to imos: %s message: %s", msg.UUID, string(msg.Payload))
 	time.Sleep(1 * time.Second)
 	return nil
 }
