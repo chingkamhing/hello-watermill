@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	github.com/alitto/pond v1.8.3 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect

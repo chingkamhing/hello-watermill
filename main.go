@@ -3,8 +3,17 @@ package main
 import (
 	"log"
 
+	"github.com/alitto/pond"
 	"github.com/spf13/cobra"
 )
+
+const numEmailWorkers = 2
+
+var emailWorker *pond.WorkerPool
+
+const numImosWorkers = 2
+
+var imosWorker *pond.WorkerPool
 
 var rootCmd = &cobra.Command{
 	Use:   "",
@@ -32,6 +41,11 @@ func init() {
 }
 
 func main() {
+	// create an unbuffered (blocking) pool with a number of workers
+	emailWorker = pond.New(numEmailWorkers, 0, pond.MinWorkers(numEmailWorkers))
+	defer emailWorker.StopAndWait()
+	imosWorker = pond.New(numImosWorkers, 0, pond.MinWorkers(numImosWorkers))
+	defer imosWorker.StopAndWait()
 	// run root command
 	err := rootCmd.Execute()
 	if err != nil {
