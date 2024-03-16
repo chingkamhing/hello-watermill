@@ -13,6 +13,8 @@ import (
 type MsgHandler func(msg *message.Message) error
 type TopicHandler map[string]MsgHandler
 
+const toEmail = "chingkamhing@gmail.com"
+
 var topicHandlers = TopicHandler{
 	"wk.email.send": handlerEmail,
 	"wk.imos.post":  handlerImos,
@@ -44,18 +46,31 @@ func publishMessages(publisher message.Publisher) {
 		}
 		log.Printf("Publish to %s topic %s", topic, msg.UUID)
 
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 	}
 }
 
 func handlerEmail(msg *message.Message) error {
-	log.Printf("Send email: %s message: %s", msg.UUID, string(msg.Payload))
+	body := string(msg.Payload)
+	log.Printf("Send email: %s message: %s", msg.UUID, body)
+	return sendEmail(toEmail, body)
+}
+
+func handlerImos(msg *message.Message) error {
+	xml := string(msg.Payload)
+	log.Printf("Post to imos: %s message: %s", msg.UUID, xml)
+	return postImos(xml)
+}
+
+func sendEmail(to, body string) error {
+	_ = to
+	_ = body
 	time.Sleep(5 * time.Second)
 	return nil
 }
 
-func handlerImos(msg *message.Message) error {
-	log.Printf("Post to imos: %s message: %s", msg.UUID, string(msg.Payload))
+func postImos(xml string) error {
+	_ = xml
 	time.Sleep(1 * time.Second)
 	return nil
 }
