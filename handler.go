@@ -35,6 +35,8 @@ func (handler TopicHandler) Topics() []string {
 }
 
 func publishMessages(publisher message.Publisher) {
+	// sleep a short while to make sure router is running
+	time.Sleep(100 * time.Millisecond)
 	topics := topicHandlers.Topics()
 	numTopics := len(topics)
 	for {
