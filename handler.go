@@ -37,7 +37,7 @@ func (handler TopicHandler) Topics() []string {
 func publishMessages(publisher message.Publisher) {
 	// sleep a short while to make sure router is running
 	time.Sleep(100 * time.Millisecond)
-	for i := 0; i < 20; i++ {
+	for i := 0; i < numMessage; i++ {
 		msg := message.NewMessage(watermill.NewUUID(), []byte(fmt.Sprintf("Hello, Wah Kwong! (%v)", i)))
 		topic := "wk.email.send"
 		if err := publisher.Publish(topic, msg); err != nil {

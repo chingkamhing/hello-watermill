@@ -11,6 +11,7 @@ var pubsubDriver string
 var numWorkers int
 var redisAddr string
 var redisDb int
+var numMessage int
 
 var emailWorker *pond.WorkerPool
 var imosWorker *pond.WorkerPool
@@ -40,6 +41,7 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&numWorkers, "workers", 2, "Number of workers")
 	rootCmd.PersistentFlags().StringVar(&redisAddr, "redisaddr", "localhost:6379", "Redis address")
 	rootCmd.PersistentFlags().IntVar(&redisDb, "redisdb", 0, "Redis db")
+	rootCmd.PersistentFlags().IntVar(&numMessage, "messages", 10, "Number of messages to publish")
 	rootCmd.AddCommand(cmdRouter)
 	rootCmd.AddCommand(cmdPubSub)
 }
