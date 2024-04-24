@@ -1,8 +1,8 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"math/rand"
 	"time"
 
 	"github.com/ThreeDotsLabs/watermill"
@@ -21,7 +21,7 @@ var topicHandlers = TopicHandler{
 }
 
 var gochannelConfig = gochannel.Config{
-	OutputChannelBuffer:            4,
+	OutputChannelBuffer:            20,
 	Persistent:                     false,
 	BlockPublishUntilSubscriberAck: false,
 }
@@ -37,18 +37,15 @@ func (handler TopicHandler) Topics() []string {
 func publishMessages(publisher message.Publisher) {
 	// sleep a short while to make sure router is running
 	time.Sleep(100 * time.Millisecond)
-	topics := topicHandlers.Topics()
-	numTopics := len(topics)
-	for {
-		msg := message.NewMessage(watermill.NewUUID(), []byte("Hello, Wah Kwong!"))
-		r := rand.Intn(numTopics)
-		topic := topics[r]
+	for i := 0; i < 20; i++ {
+		msg := message.NewMessage(watermill.NewUUID(), []byte(fmt.Sprintf("Hello, Wah Kwong! (%v)", i)))
+		topic := "wk.email.send"
 		if err := publisher.Publish(topic, msg); err != nil {
 			log.Fatalf("Publish error: %v", err)
 		}
-		log.Printf("Publish to %s topic %s", topic, msg.UUID)
+		log.Printf("Publish %v to %s topic %s", i, topic, msg.UUID)
 
-		time.Sleep(1 * time.Second)
+		time.Sleep(200 * time.Millisecond)
 	}
 }
 
@@ -57,6 +54,7 @@ func handlerEmail(msg *message.Message) error {
 	log.Printf("Send email: %s message: %s", msg.UUID, body)
 	emailWorker.Submit(func() {
 		sendEmail(toEmail, body)
+		log.Printf("Done sending email: %s", msg.UUID)
 	})
 	return nil
 }
