@@ -52,33 +52,24 @@ func publishMessages(publisher message.Publisher) {
 func handlerEmail(msg *message.Message) error {
 	body := string(msg.Payload)
 	log.Printf("Send email: %s message: %s", msg.UUID, body)
-	emailWorker.Submit(func() {
-		sendEmail(toEmail, body)
-		log.Printf("Done sending email: %s", msg.UUID)
-	})
-	return nil
+	return sendEmail(toEmail, body)
 }
 
 func handlerImos(msg *message.Message) error {
 	xml := string(msg.Payload)
 	log.Printf("Post to imos: %s message: %s", msg.UUID, xml)
-	emailWorker.Submit(func() {
-		postImos(xml)
-	})
-	return nil
+	return postImos(xml)
 }
 
 func sendEmail(to, body string) error {
 	_ = to
 	_ = body
-	log.Printf("Send email to: %s body: %s", to, body)
 	time.Sleep(5 * time.Second)
 	return nil
 }
 
 func postImos(xml string) error {
 	_ = xml
-	log.Printf("Post xml to IMOS: %s", xml)
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	return nil
 }

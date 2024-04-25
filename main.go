@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/alitto/pond"
 	"github.com/spf13/cobra"
 )
 
@@ -12,9 +11,6 @@ var numWorkers int
 var redisAddr string
 var redisDb int
 var numMessage int
-
-var emailWorker *pond.WorkerPool
-var imosWorker *pond.WorkerPool
 
 var rootCmd = &cobra.Command{
 	Use:   "",
@@ -47,11 +43,6 @@ func init() {
 }
 
 func main() {
-	// create an unbuffered (blocking) pool with a number of workers
-	emailWorker = pond.New(numWorkers, 0, pond.MinWorkers(numWorkers))
-	defer emailWorker.StopAndWait()
-	imosWorker = pond.New(numWorkers, 0, pond.MinWorkers(numWorkers))
-	defer imosWorker.StopAndWait()
 	// run root command
 	err := rootCmd.Execute()
 	if err != nil {

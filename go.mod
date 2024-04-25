@@ -5,7 +5,6 @@ go 1.21.7
 require (
 	github.com/ThreeDotsLabs/watermill v1.3.5
 	github.com/ThreeDotsLabs/watermill-redisstream v1.3.0
-	github.com/alitto/pond v1.8.3
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/spf13/cobra v1.8.0
 )
