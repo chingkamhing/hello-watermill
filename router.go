@@ -14,6 +14,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var driverSupportWorkGroup = map[string]struct{}{
+	"firestorepubsub": {},
+	"gcppubsub":       {},
+	"kafka":           {},
+	"nats":            {},
+	"rabbitmq":        {},
+	"redis":           {},
+	"sql":             {},
+}
+
 func runRouter(cmd *cobra.Command, args []string) {
 	// create pubsub channel
 	logger := watermill.NewStdLogger(false, false)
@@ -30,6 +40,11 @@ func runRouter(cmd *cobra.Command, args []string) {
 	publisher, subscriber, err := createPubsuber(logger)
 	if err != nil {
 		log.Fatalf("Create Publisher/Subscriber error: %v", err)
+	}
+	// only driver support workgroup can have multiple workers
+	_, supportWorkGroup := driverSupportWorkGroup[pubsubDriver]
+	if !supportWorkGroup {
+		numWorkers = 1
 	}
 	// prepare topic handlers
 	for topic, handler := range topicHandlers {
