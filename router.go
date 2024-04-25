@@ -31,8 +31,6 @@ func runRouter(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("Create Publisher/Subscriber error: %v", err)
 	}
-	defer publisher.Close()
-	defer subscriber.Close()
 	// prepare topic handlers
 	for topic, handler := range topicHandlers {
 		for i := 0; i < numWorkers; i++ {
