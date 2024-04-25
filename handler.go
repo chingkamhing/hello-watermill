@@ -51,14 +51,16 @@ func publishMessages(publisher message.Publisher) {
 
 func handlerEmail(msg *message.Message) error {
 	body := string(msg.Payload)
+	err := sendEmail(toEmail, body)
 	log.Printf("Send email: %s message: %s", msg.UUID, body)
-	return sendEmail(toEmail, body)
+	return err
 }
 
 func handlerImos(msg *message.Message) error {
 	xml := string(msg.Payload)
+	err := postImos(xml)
 	log.Printf("Post to imos: %s message: %s", msg.UUID, xml)
-	return postImos(xml)
+	return err
 }
 
 func sendEmail(to, body string) error {
