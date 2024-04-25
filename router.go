@@ -35,12 +35,14 @@ func runRouter(cmd *cobra.Command, args []string) {
 	defer subscriber.Close()
 	// prepare topic handlers
 	for topic, handler := range topicHandlers {
-		router.AddNoPublisherHandler(
-			fmt.Sprintf("%v_handler", topic),
-			topic,
-			subscriber,
-			message.NoPublishHandlerFunc(handler),
-		)
+		for i := 0; i < numWorkers; i++ {
+			router.AddNoPublisherHandler(
+				fmt.Sprintf("%v_handler_%v", topic, i),
+				topic,
+				subscriber,
+				message.NoPublishHandlerFunc(handler),
+			)
+		}
 	}
 	// publish message to the topics
 	go publishMessages(publisher)
