@@ -4,12 +4,18 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/ThreeDotsLabs/watermill"
+	"github.com/ThreeDotsLabs/watermill-amazonsqs/connection"
+	"github.com/ThreeDotsLabs/watermill-amazonsqs/sqs"
 	"github.com/ThreeDotsLabs/watermill-redisstream/pkg/redisstream"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/plugin"
 	"github.com/ThreeDotsLabs/watermill/pubsub/gochannel"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cobra"
 )
@@ -22,11 +28,17 @@ var driverSupportWorkGroup = map[string]struct{}{
 	"rabbitmq":        {},
 	"redis":           {},
 	"sql":             {},
+	"sqs":             {}, //FIXME, not sure yet
 }
+
+var awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
+var awsAccessSecret = os.Getenv("AWS_ACCESS_SECRET")
+var awsSqsRegion = os.Getenv("AWS_SQS_REGION")
+var awsSqsEndpoint = os.Getenv("AWS_SQS_ENDPOINT")
 
 func runRouter(cmd *cobra.Command, args []string) {
 	// create pubsub channel
-	logger := watermill.NewStdLogger(false, false)
+	logger := watermill.NewStdLogger(debug, false)
 	router, err := message.NewRouter(message.RouterConfig{}, logger)
 	if err != nil {
 		log.Fatalf("New router error: %v", err)
@@ -68,7 +80,40 @@ func runRouter(cmd *cobra.Command, args []string) {
 }
 
 func createPubsuber(logger watermill.LoggerAdapter) (message.Publisher, message.Subscriber, error) {
+	logger.Info("Create pubsub", watermill.LogFields{"driver": pubsubDriver})
 	switch pubsubDriver {
+	case "sqs":
+		cfg, err := awsconfig.LoadDefaultConfig(
+			context.Background(),
+			connection.SetEndPoint(awsSqsEndpoint),
+			awsconfig.WithRegion(awsSqsRegion),
+			awsconfig.WithCredentialsProvider(credentials.StaticCredentialsProvider{
+				Value: aws.Credentials{
+					AccessKeyID:     awsAccessKey,
+					SecretAccessKey: awsAccessSecret,
+				},
+			}),
+		)
+		if err != nil {
+			return nil, nil, fmt.Errorf("LoadDefaultConfig(): %w", err)
+		}
+		publisher, err := sqs.NewPublisher(sqs.PublisherConfig{
+			AWSConfig:              cfg,
+			CreateQueueIfNotExists: true,
+			Marshaler:              sqs.DefaultMarshalerUnmarshaler{},
+		}, logger)
+		if err != nil {
+			return nil, nil, fmt.Errorf("NewPublisher(): %w", err)
+		}
+		subscriber, err := sqs.NewSubscriber(sqs.SubscriberConfig{
+			AWSConfig:                    cfg,
+			CreateQueueInitializerConfig: sqs.QueueConfigAtrributes{},
+			Unmarshaler:                  sqs.DefaultMarshalerUnmarshaler{},
+		}, logger)
+		if err != nil {
+			return nil, nil, fmt.Errorf("NewSubscriber(): %w", err)
+		}
+		return publisher, subscriber, nil
 	case "redis":
 		redisClient := redis.NewClient(&redis.Options{
 			Addr: redisAddr,

@@ -11,6 +11,7 @@ var numWorkers int
 var redisAddr string
 var redisDb int
 var numMessage int
+var debug bool
 
 var rootCmd = &cobra.Command{
 	Use:   "",
@@ -33,11 +34,12 @@ var cmdRouter = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&pubsubDriver, "driver", "gochannel", "Pub/Sub driver of: gochannel, redis")
+	rootCmd.PersistentFlags().StringVar(&pubsubDriver, "driver", "gochannel", "Pub/Sub driver of: gochannel, redis, sqs")
 	rootCmd.PersistentFlags().IntVar(&numWorkers, "workers", 1, "Number of workers")
 	rootCmd.PersistentFlags().StringVar(&redisAddr, "redisaddr", "localhost:6379", "Redis address")
 	rootCmd.PersistentFlags().IntVar(&redisDb, "redisdb", 0, "Redis db")
 	rootCmd.PersistentFlags().IntVar(&numMessage, "messages", 10, "Number of messages to publish")
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enable/Disable debug log message")
 	rootCmd.AddCommand(cmdRouter)
 	rootCmd.AddCommand(cmdPubSub)
 }
