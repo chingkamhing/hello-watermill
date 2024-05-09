@@ -16,8 +16,8 @@ type TopicHandler map[string]MsgHandler
 const toEmail = "chingkamhing@gmail.com"
 
 var topicHandlers = TopicHandler{
-	"wk.email.send": handlerEmail,
-	"wk.imos.post":  handlerImos,
+	"wk-email-send": handlerEmail,
+	"wk-imos-post":  handlerImos,
 }
 
 var gochannelConfig = gochannel.Config{
