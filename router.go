@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-amazonsqs/connection"
 	"github.com/ThreeDotsLabs/watermill-amazonsqs/sqs"
 	"github.com/ThreeDotsLabs/watermill-redisstream/pkg/redisstream"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -34,7 +33,6 @@ var driverSupportWorkGroup = map[string]struct{}{
 var awsAccessKey = os.Getenv("AWS_ACCESS_KEY")
 var awsAccessSecret = os.Getenv("AWS_ACCESS_SECRET")
 var awsSqsRegion = os.Getenv("AWS_SQS_REGION")
-var awsSqsEndpoint = os.Getenv("AWS_SQS_ENDPOINT")
 
 func runRouter(cmd *cobra.Command, args []string) {
 	// create pubsub channel
@@ -85,7 +83,6 @@ func createPubsuber(logger watermill.LoggerAdapter) (message.Publisher, message.
 	case "sqs":
 		cfg, err := awsconfig.LoadDefaultConfig(
 			context.Background(),
-			connection.SetEndPoint(awsSqsEndpoint),
 			awsconfig.WithRegion(awsSqsRegion),
 			awsconfig.WithCredentialsProvider(credentials.StaticCredentialsProvider{
 				Value: aws.Credentials{
