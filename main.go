@@ -33,6 +33,13 @@ var cmdRouter = &cobra.Command{
 	Run:   runRouter,
 }
 
+var cmdList = &cobra.Command{
+	Use:   "list",
+	Short: "List SQS queues",
+	Args:  cobra.ExactArgs(0),
+	Run:   runList,
+}
+
 func init() {
 	rootCmd.PersistentFlags().StringVar(&pubsubDriver, "driver", "gochannel", "Pub/Sub driver of: gochannel, redis, sqs")
 	rootCmd.PersistentFlags().IntVar(&numWorkers, "workers", 1, "Number of workers")
@@ -42,6 +49,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "Enable/Disable debug log message")
 	rootCmd.AddCommand(cmdRouter)
 	rootCmd.AddCommand(cmdPubSub)
+	rootCmd.AddCommand(cmdList)
 }
 
 func main() {
