@@ -39,7 +39,7 @@ func publishMessages(publisher message.Publisher) {
 	time.Sleep(100 * time.Millisecond)
 	for i := 0; i < numMessage; i++ {
 		msg := message.NewMessage(watermill.NewUUID(), []byte(fmt.Sprintf("Hello, Wah Kwong! (%v)", i)))
-		topic := "wk.email.send"
+		topic := "wk-email-send"
 		if err := publisher.Publish(topic, msg); err != nil {
 			log.Fatalf("Publish error: %v", err)
 		}
