@@ -15,7 +15,7 @@ var debug bool
 
 var rootCmd = &cobra.Command{
 	Use:   "",
-	Short: "wk-api server",
+	Short: "pub/sub server",
 	Run:   runRoot,
 }
 

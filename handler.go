@@ -16,8 +16,8 @@ type TopicHandler map[string]MsgHandler
 const toEmail = "chingkamhing@gmail.com"
 
 var topicHandlers = TopicHandler{
-	"wk-email-send": handlerEmail,
-	"wk-imos-post":  handlerImos,
+	"test-one": handlerOne,
+	"test-two": handlerTwo,
 }
 
 var gochannelConfig = gochannel.Config{
@@ -39,7 +39,7 @@ func publishMessages(publisher message.Publisher) {
 	time.Sleep(100 * time.Millisecond)
 	for i := 0; i < numMessage; i++ {
 		msg := message.NewMessage(watermill.NewUUID(), []byte(fmt.Sprintf("Hello, Wah Kwong! (%v)", i)))
-		topic := "wk-email-send"
+		topic := "test-one"
 		if err := publisher.Publish(topic, msg); err != nil {
 			log.Fatalf("Publish error: %v", err)
 		}
@@ -49,17 +49,17 @@ func publishMessages(publisher message.Publisher) {
 	}
 }
 
-func handlerEmail(msg *message.Message) error {
+func handlerOne(msg *message.Message) error {
 	body := string(msg.Payload)
 	err := sendEmail(toEmail, body)
-	log.Printf("Send email: %s message: %s", msg.UUID, body)
+	log.Printf("Handler one: %s message: %s", msg.UUID, body)
 	return err
 }
 
-func handlerImos(msg *message.Message) error {
+func handlerTwo(msg *message.Message) error {
 	xml := string(msg.Payload)
 	err := postImos(xml)
-	log.Printf("Post to imos: %s message: %s", msg.UUID, xml)
+	log.Printf("Handler two: %s message: %s", msg.UUID, xml)
 	return err
 }
 
